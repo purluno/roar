@@ -37,5 +37,4 @@ dependencies {
     compile 'org.scala-lang:scala-library:2.11.2'
     compile 'com.typesafe.akka:akka-actor_2.11:2.3.4'
     compile 'org.twitter4j:twitter4j-core:4.0.+'
-    compile 'com.j256.ormlite:ormlite-android:4.48'
 }
