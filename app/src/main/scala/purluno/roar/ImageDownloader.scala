@@ -1,9 +1,11 @@
 package purluno.roar
 
 import java.net.URL
+import java.util.concurrent.TimeUnit
 
 import akka.actor.Actor
 import akka.pattern._
+import akka.util.Timeout
 import android.graphics.{Bitmap, BitmapFactory}
 import purluno.roar.db.DatabaseActor
 import purluno.roar.util.MutableLruMap
@@ -21,7 +23,10 @@ object ImageDownloader {
 
 class ImageDownloader extends Actor {
 
+  import context.dispatcher
   import purluno.roar.ImageDownloader._
+
+  implicit val timeout: Timeout = Timeout(30, TimeUnit.SECONDS)
 
   val cache: mutable.Map[String, Bitmap] = MutableLruMap.empty(100)
 
@@ -46,13 +51,13 @@ class ImageDownloader extends Actor {
           case Some(bitmap) =>
             sender() ! Result(bitmap)
           case None =>
-            val sender = sender()
+            val sender0 = sender()
             App.databaseActor ? DatabaseActor.GetBitmap(url) onComplete {
               case Success(DatabaseActor.GetBitmapResult(Some(bitmap))) =>
-                sender ! Result(bitmap)
+                sender0 ! Result(bitmap)
               case Success(DatabaseActor.GetBitmapResult(None)) =>
                 val bitmap = load(url)
-                sender() ! Result(bitmap)
+                sender0 ! Result(bitmap)
                 store(url, bitmap)
             }
         }

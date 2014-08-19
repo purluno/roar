@@ -35,7 +35,7 @@ class DatabaseActor(context: Context) extends Actor {
           cursor.moveToNext()
           val blob = cursor.getBlob(0)
           val bitmap = BitmapFactory.decodeByteArray(blob, 0, blob.length)
-          sender() ! GetBitmapResult(bitmap)
+          sender() ! GetBitmapResult(Some(bitmap))
         }
       } finally {
         db.close()

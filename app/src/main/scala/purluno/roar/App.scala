@@ -6,6 +6,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import android.app.Application
 import android.net.http.HttpResponseCache
 import android.util.Log
+import com.typesafe.config.{Config, ConfigFactory}
 import purluno.roar.db.DatabaseActor
 import purluno.roar.twitter.Twitter
 import twitter4j.TwitterFactory
@@ -17,7 +18,7 @@ import scala.concurrent.ExecutionContext
  * 앱 코드 어디에서나 접근할 수 있는 공용 객체를 가진다.
  */
 object App {
-  val config: AppConfigBase = AppConfig
+  val config: Config = ConfigFactory.load()
 
   var actorSystem: ActorSystem = null
 
@@ -51,8 +52,8 @@ class App extends Application {
   def initActors(): Unit = {
     val conf = new ConfigurationBuilder()
       .setDebugEnabled(true)
-      .setOAuthConsumerKey(config.oAuthConsumerKey)
-      .setOAuthConsumerSecret(config.oAuthConsumerSecret)
+      .setOAuthConsumerKey(config.getString("purluno.roar.oauth-consumer-key"))
+      .setOAuthConsumerSecret(config.getString("purluno.roar.oauth-consumer-secret"))
       .build()
     val twitterFactory = new TwitterFactory(conf)
 
